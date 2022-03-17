@@ -47,18 +47,17 @@
 // MineLeftCount.textContent = NUMBER_OF_MINES;
 
 
+// *************************************************** MAIN CODE ***************************************//
 
+import {MineSweeper} from './minesweeper.js';
 
-import {
-    MineSweeper
-} from "./minesweeper";
-
+// inheritance the minesweeper
 class MinesweeeprUI extends MineSweeper {
     constructor(
         BOARD_SIZE,
         NUMBER_OF_MINES, {
             boardElement,
-            mineLeftCount,
+            mineLeftCountElement,
             messageTextElement
         }
     ) {
@@ -87,14 +86,19 @@ class MinesweeeprUI extends MineSweeper {
             });
         });
     }
+
+
     listMineLeft() {
         const markTilesCount = this.boardTiles.reduce((count, row) => {
             return (
-                count + row.filter((tile) => tile.status === this.TILE_STATUS.MARKED).length
+                count + row.filter((tile) => tile.status === this.TILE_STATUSES.MARKED).length
             )
-        })
+        },0)
 
+        this.mineLeftCountElement.textContent = this.NUMBER_OF_MINES - markTilesCount;
     }
+
+
     checkGameEnd() {
         const win = this.checkWin();
         const lose = this.checkLose();
@@ -112,10 +116,10 @@ class MinesweeeprUI extends MineSweeper {
             this.messageTextElement.textContent = "You win!";
         }
         if (lose) {
-            this.messageTextElement.textContent = "You degenrate!";
-            this.boardElement.forEach((row) => {
+            this.messageTextElement.textContent = "You lose!";
+            this.boardTiles.forEach((row) => {
                 row.forEach((tile) => {
-                    if (tile.TILE_STATUS === this.TILE_STATUS.MARKED)
+                    if (tile.TILE_STATUSES === this.TILE_STATUSES.MARKED)
                         this.markTile(tile);
                     if (tile.mine) this.revealTile(tile);
                 });
@@ -138,11 +142,11 @@ const messageTextElement  = document.querySelector(".subtext");
 
 const boardUI = new MinesweeeprUI(BOARD_SIZE,NUMBER_OF_MINES, {
     boardElement,
-    mineLeftCount,
+    mineLeftCountElement,
     messageTextElement
 })
 
-boardElement.updateTilesUI()
+boardUI.updateTilesUI()
 
-boardElement.setProperty("--Size",BOARD_SIZE)
+boardElement.style.setProperty("--size",BOARD_SIZE)
 mineLeftCountElement.textContent = NUMBER_OF_MINES;
